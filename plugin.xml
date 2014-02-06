@@ -5,7 +5,7 @@
       version="0.3.2">
 
     <name>Datepicker</name>
-    <description>Cordova Datepicker Plugin</description>
+    <description>Cordova Datepicker Plugin for iOS and Android. </description>
     <license>MIT</license>
     <keywords>cordova,datepicker,ios,android</keywords>
 
