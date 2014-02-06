@@ -22,6 +22,26 @@ Or using PhoneGap CLI:
 phonegap local plugin add https://github.com/nicholasareed/cordova-plugin-datepicker
 ```
 
+
+3a) Register plugin within `config.xml` of your app
+
+```xml
+<feature name="DatePicker">
+    <param name="ios-package" value="DatePicker"/>
+</feature>
+
+<feature name="DatePickerPlugin">
+    <param name="android-package" value="com.plugin.datepicker.DatePickerPlugin"/>
+</feature>
+```
+
+3b) If you are using [PhoneGap build service](https://build.phonegap.com/) add to `config.xml`
+
+```xml
+<gap:plugin name="com.plugin.datepicker" />
+```
+
+
 ## Usage
 
 ```js
