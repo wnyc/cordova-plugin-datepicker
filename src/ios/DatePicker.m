@@ -98,8 +98,7 @@
 
 
 - (void)cancelAction:(id)sender {
-  NSString* jsCallback = [NSString stringWithFormat:@"datePicker._dateCanceled();"];
-  [super writeJavascript:jsCallback];
+  [self jsDateCanceled];
   [self hide];
 }
 
@@ -115,6 +114,10 @@
   [super writeJavascript:jsCallback];
 }
 
+- (void)jsDateCanceled {
+  NSString* jsCallback = [NSString stringWithFormat:@"datePicker._dateCanceled();"];
+  [super writeJavascript:jsCallback];
+}
 
 #pragma mark - UIActionSheetDelegate methods
 
@@ -151,7 +154,7 @@
     NSMutableArray *buttons =[[NSMutableArray alloc] init];
     
     // Create Cancel button
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(hide)];
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelAction:)];
     [buttons addObject:cancelButton];
     
     // Create title label aligned to center and appropriate spacers
