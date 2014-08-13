@@ -19,6 +19,7 @@
 @property (nonatomic) UIActionSheet* datePickerSheet;
 @property (nonatomic) UIDatePicker* datePicker;
 @property (nonatomic) UIPopoverController *datePickerPopover;
+@property (nonatomic) UIView* datePickerView;
 
 @end
 
@@ -26,10 +27,18 @@
 
 #pragma mark - UIDatePicker
 
+- (BOOL) isOSAtLeast:(NSString*) version {
+    return [[[UIDevice currentDevice] systemVersion] compare:version options:NSNumericSearch] != NSOrderedAscending;
+}
+
 - (void)show:(CDVInvokedUrlCommand*)command {
   NSMutableDictionary *options = [command argumentAtIndex:0];
   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-    [self showForPhone: options];
+      if ([self isOSAtLeast:@"8.0" ])  {
+          [self showForPhoneiOS8: options];
+      } else {
+          [self showForPhone: options];
+      }
   } else {
     [self showForPad: options];
   }   
@@ -43,6 +52,14 @@
   return true;
 }
 
+- (BOOL)showForPhoneiOS8:(NSMutableDictionary *)options {
+    if(!self.isVisible){
+        self.datePickerView = [self createView:options];
+        self.isVisible = TRUE;
+    }
+    return true;
+}
+
 - (BOOL)showForPad:(NSMutableDictionary *)options {
   if(!self.isVisible){
     self.datePickerPopover = [self createPopover:options];
@@ -53,7 +70,22 @@
 
 - (void)hide {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.datePickerSheet dismissWithClickedButtonIndex:0 animated:YES];
+        if ([self isOSAtLeast:@"8.0" ])  {
+            [UIView animateWithDuration:0.5
+                                  delay:0.0
+                                options: 0
+                             animations:^{
+                                 self.datePickerView.frame = CGRectOffset(self.viewController.view.frame, 0, [[UIScreen mainScreen] bounds].size.height);
+                                 
+                             }
+                             completion:^(BOOL finished){
+                                 [self.datePickerView removeFromSuperview];
+                                 self.isVisible = FALSE;
+                             }];
+            
+        } else {
+            [self.datePickerSheet dismissWithClickedButtonIndex:0 animated:YES];
+        }
     } else {
         [self.datePickerPopover dismissPopoverAnimated:YES];
     }
@@ -101,6 +133,59 @@
 }
 
 #pragma mark - Factory methods
+
+- (UIView *)createView:(NSMutableDictionary *)options {
+
+    
+    // date picker
+    CGRect frame = CGRectMake(0, 40, 0, 0);
+    if(!self.datePicker){
+        self.datePicker = [self createDatePicker: options frame:frame];
+    }
+    [self updateDatePicker:options];
+    
+    // Initialize the toolbar with Cancel and Done buttons and title
+    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame: CGRectMake(0, 0, self.viewSize.width, 44)];
+    toolbar.barStyle = [self isOSAtLeast:@"7.0"] ? UIBarStyleDefault : UIBarStyleBlackTranslucent;
+    NSMutableArray *buttons =[[NSMutableArray alloc] init];
+    
+    // Create Cancel button
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(hide)];
+    [buttons addObject:cancelButton];
+    
+    // Create title label aligned to center and appropriate spacers
+    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [buttons addObject:flexSpace];
+    UILabel *label =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 180, 30)];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setTextColor: [self isOSAtLeast:@"7.0"] ? [UIColor blackColor] : [UIColor whiteColor]];
+    [label setFont: [UIFont boldSystemFontOfSize:16]];
+    [label setBackgroundColor:[UIColor clearColor]];
+    label.text = @"";
+    UIBarButtonItem *labelButton = [[UIBarButtonItem alloc] initWithCustomView:label];
+    [buttons addObject:labelButton];
+    [buttons addObject:flexSpace];
+    
+    // Create Done button
+    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneAction:)];
+    [buttons addObject:doneButton];
+    [toolbar setItems:buttons animated:YES];
+ 
+    
+    UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, [[UIScreen mainScreen] bounds].size.height, self.viewSize.width, 260)];
+    [view setBackgroundColor:[UIColor whiteColor]];
+    [view addSubview: toolbar];
+    [view addSubview:self.datePicker];
+    
+    [self.viewController.view addSubview:view];
+    [UIView beginAnimations:@"SlideUpDatePicker" context:nil];
+    [UIView setAnimationDuration:0.5];
+    view.frame = CGRectOffset(self.viewController.view.frame, 0, [[UIScreen mainScreen] bounds].size.height-260);
+    [UIView commitAnimations];
+    
+    return view;
+}
+
 
 - (UIActionSheet *)createActionSheet:(NSMutableDictionary *)options {
   UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -265,6 +350,20 @@
     [scanner setScanLocation:1]; // bypass '#' character
     [scanner scanHexInt:&rgbValue];
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
+//
+// Utilities
+//
+
+- (CGSize) viewSize {
+    if (![self isViewPortrait])
+        return CGSizeMake(480, 320);
+    return CGSizeMake(320, 480);
+}
+
+- (BOOL) isViewPortrait {
+    return UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation);
 }
 
 @end
