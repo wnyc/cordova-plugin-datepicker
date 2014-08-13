@@ -212,6 +212,7 @@
   UISegmentedControl *doneButton = [self createDoneButton:options];    
   [actionSheet addSubview:doneButton];
   // show UIActionSheet
+  [actionSheet setBackgroundColor:[UIColor whiteColor]];
   [actionSheet showInView:self.webView.superview];
   [actionSheet setBounds:CGRectMake(0, 0, 320, 485)];
 
