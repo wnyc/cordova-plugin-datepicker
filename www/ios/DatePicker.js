@@ -21,7 +21,7 @@ function DatePicker() {
 /**
  * show - true to show the ad, false to hide the ad
  */
-DatePicker.prototype.show = function(options, cb) {
+DatePicker.prototype.show = function(options, cb, cancel_cb) {
     var padDate = function(date) {
       if (date.length == 1) {
         return ("0" + date);
@@ -76,6 +76,7 @@ DatePicker.prototype.show = function(options, cb) {
             defaults[key] = options[key];
     }
     this._callback = cb;
+    this._cancel_callback = cancel_cb;
 
     exec(null, 
       null, 
@@ -91,5 +92,9 @@ DatePicker.prototype._dateSelected = function(date) {
         this._callback(d);
 }
 
+DatePicker.prototype._dateCanceled = function() {
+    if (this._cancel_callback)
+        this._cancel_callback();
+}
 var datePicker = new DatePicker();
 module.exports = datePicker
