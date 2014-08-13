@@ -15,7 +15,6 @@
 
 @interface DatePicker ()
 
-@property (nonatomic) NSTimeInterval originalTime;
 @property (nonatomic) BOOL isVisible;
 @property (nonatomic) UIActionSheet* datePickerSheet;
 @property (nonatomic) UIDatePicker* datePicker;
@@ -99,11 +98,10 @@
 
 
 - (void)cancelAction:(id)sender {
-  NSString* jsCallback = [NSString stringWithFormat:@"datePicker._dateSelected(\"%f\");", _originalTime];
+  NSString* jsCallback = [NSString stringWithFormat:@"datePicker._dateCanceled();"];
   [super writeJavascript:jsCallback];
   [self hide];
 }
-
 
 - (void)dateChangedAction:(id)sender {
   [self jsDateSelected];
@@ -285,7 +283,6 @@
   }
     
   self.datePicker.date = [formatter dateFromString:dateString];
-  self.originalTime = [self.datePicker.date timeIntervalSince1970];
     
   if ([mode isEqualToString:@"date"]) {
     self.datePicker.datePickerMode = UIDatePickerModeDate;
