@@ -20,6 +20,7 @@
 @property (nonatomic) UIDatePicker* datePicker;
 @property (nonatomic) UIPopoverController *datePickerPopover;
 @property (nonatomic) UIView* datePickerView;
+@property (nonatomic) UIView* touchInterceptorView;
 
 @end
 
@@ -80,6 +81,7 @@
                              }
                              completion:^(BOOL finished){
                                  [self.datePickerView removeFromSuperview];
+                                 [self.touchInterceptorView removeFromSuperview];
                                  self.isVisible = FALSE;
                              }];
             
@@ -175,6 +177,14 @@
     [buttons addObject:doneButton];
     [toolbar setItems:buttons animated:YES];
  
+    // No need to create it again if it already exists
+    if (_touchInterceptorView==nil){
+        _touchInterceptorView = [[UIView alloc] initWithFrame:self.viewController.view.frame];
+    }
+    // Fill the parent view
+    [_touchInterceptorView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.5]];
+    [self.viewController.view addSubview:_touchInterceptorView];
+    [self.viewController.view bringSubviewToFront:_touchInterceptorView];
     
     UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, [[UIScreen mainScreen] bounds].size.height, self.viewSize.width, 260)];
     [view setBackgroundColor:[UIColor whiteColor]];
@@ -182,6 +192,7 @@
     [view addSubview:self.datePicker];
     
     [self.viewController.view addSubview:view];
+    [self.viewController.view bringSubviewToFront:view];
     [UIView beginAnimations:@"SlideUpDatePicker" context:nil];
     [UIView setAnimationDuration:0.5];
     view.frame = CGRectOffset(self.viewController.view.frame, 0, [[UIScreen mainScreen] bounds].size.height-260);
