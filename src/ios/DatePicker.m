@@ -35,7 +35,8 @@
 - (void)show:(CDVInvokedUrlCommand*)command {
   NSMutableDictionary *options = [command argumentAtIndex:0];
   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-      if ([self isOSAtLeast:@"8.0" ])  {
+      //if ([self isOSAtLeast:@"8.0" ])  {
+      if ([self isOSAtLeast:@"6.0" ])  {
           [self showForPhoneiOS8: options];
       } else {
           [self showForPhone: options];
@@ -71,12 +72,14 @@
 
 - (void)hide {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ([self isOSAtLeast:@"8.0" ])  {
+        //if ([self isOSAtLeast:@"8.0" ])  {
+        if ([self isOSAtLeast:@"6.0" ])  {
             [UIView animateWithDuration:0.5
                                   delay:0.0
                                 options: 0
                              animations:^{
                                  self.datePickerView.frame = CGRectOffset(self.viewController.view.frame, 0, [[UIScreen mainScreen] bounds].size.height);
+                                 self.touchInterceptorView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
                                  
                              }
                              completion:^(BOOL finished){
@@ -182,7 +185,7 @@
         _touchInterceptorView = [[UIView alloc] initWithFrame:self.viewController.view.frame];
     }
     // Fill the parent view
-    [_touchInterceptorView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.5]];
+    [_touchInterceptorView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.0]];
     [self.viewController.view addSubview:_touchInterceptorView];
     [self.viewController.view bringSubviewToFront:_touchInterceptorView];
     
@@ -196,6 +199,7 @@
     [UIView beginAnimations:@"SlideUpDatePicker" context:nil];
     [UIView setAnimationDuration:0.5];
     view.frame = CGRectOffset(self.viewController.view.frame, 0, [[UIScreen mainScreen] bounds].size.height-260);
+    _touchInterceptorView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
     [UIView commitAnimations];
     
     return view;
