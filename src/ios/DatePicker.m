@@ -116,12 +116,12 @@
 - (void)jsDateSelected {
   NSTimeInterval seconds = [self.datePicker.date timeIntervalSince1970];
   NSString* jsCallback = [NSString stringWithFormat:@"datePicker._dateSelected(\"%f\");", seconds];
-  [super writeJavascript:jsCallback];
+  [self.commandDelegate evalJs:jsCallback];
 }
 
 - (void)jsDateCanceled {
   NSString* jsCallback = [NSString stringWithFormat:@"datePicker._dateCanceled();"];
-  [super writeJavascript:jsCallback];
+  [self.commandDelegate evalJs:jsCallback];
 }
 
 #pragma mark - UIActionSheetDelegate methods
