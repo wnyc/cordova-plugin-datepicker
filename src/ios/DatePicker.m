@@ -150,6 +150,8 @@
     CGRect frame = CGRectMake(0, 40, 0, 0);
     if(!self.datePicker){
         self.datePicker = [self createDatePicker: options frame:frame];
+        frame = self.datePicker.frame;
+        self.datePicker.frame = CGRectMake(frame.origin.x, frame.origin.y, CGRectGetWidth(UIScreen.mainScreen.bounds), CGRectGetHeight(frame));
     }
     [self updateDatePicker:options];
     
@@ -229,14 +231,14 @@
   // show UIActionSheet
   [actionSheet setBackgroundColor:[UIColor whiteColor]];
   [actionSheet showInView:self.webView.superview];
-  [actionSheet setBounds:CGRectMake(0, 0, 320, 485)];
+  [actionSheet setBounds:CGRectMake(0, 0, CGRectGetWidth(UIScreen.mainScreen.bounds), 485)];
 
   return actionSheet;
 }
 
 - (UIPopoverController *)createPopover:(NSMutableDictionary *)options {
     
-  CGFloat pickerViewWidth = 320.0f;
+  CGFloat pickerViewWidth = CGRectGetWidth(UIScreen.mainScreen.bounds);
   CGFloat pickerViewHeight = 216.0f;
   UIView *datePickerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, pickerViewWidth, pickerViewHeight)];
 
@@ -264,7 +266,7 @@
 }
 
 - (UIDatePicker *)createDatePicker:(NSMutableDictionary *)options frame:(CGRect)frame { 
-  UIDatePicker *datePicker = [[UIDatePicker alloc] initWithFrame:frame];      
+  UIDatePicker *datePicker = [[UIDatePicker alloc] initWithFrame:frame];
   return datePicker;
 }
 
@@ -354,7 +356,7 @@
   CGSize size = button.bounds.size;
   CGFloat width = size.width;
   CGFloat height = size.height;
-  CGFloat xPos = 320 - width - 5; // 320 == width of DatePicker, 5 == offset to right side hand
+  CGFloat xPos = CGRectGetWidth(UIScreen.mainScreen.bounds) - width - 5; // 5 == offset to right side hand
   button.frame = CGRectMake(xPos, 7.0f, width, height);
   
   [button addTarget:self action:@selector(doneAction:) forControlEvents:UIControlEventValueChanged];
@@ -378,8 +380,8 @@
 
 - (CGSize) viewSize {
     if (![self isViewPortrait])
-        return CGSizeMake(480, 320);
-    return CGSizeMake(320, 480);
+        return CGSizeMake(480, CGRectGetWidth(UIScreen.mainScreen.bounds));
+    return CGSizeMake(CGRectGetWidth(UIScreen.mainScreen.bounds), 480);
 }
 
 - (BOOL) isViewPortrait {
