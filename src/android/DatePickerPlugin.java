@@ -110,7 +110,7 @@ public class DatePickerPlugin extends CordovaPlugin {
                                                 timeDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-                                                        callbackContext.error("cancelled");
+                                                        callbackContext.success("cancel");
                                                     }
                                                 });
 					}
